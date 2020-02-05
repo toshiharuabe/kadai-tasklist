@@ -23,11 +23,14 @@ class TasksController extends Controller
                 'user' => $user,
                 'tasks' => $tasks,
             ];
+            
+            return view('tasks.index', [
+                'tasks' => $tasks,
+            ]);
         }
-           $tasks = Task::all();
-           return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+           //$tasks = Task::all();
+           
+        return view('welcome', $data);
     }
 
     /**
@@ -42,6 +45,7 @@ class TasksController extends Controller
         return view('tasks.create', [
             'task' => $task,
         ]);
+         return redirect('/');
     }
 
     /**
@@ -65,7 +69,8 @@ class TasksController extends Controller
             
          ]);
         
-        return back();
+        //return back();
+        return redirect('/');
     }
 
     /**
@@ -76,7 +81,7 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-         $task = Task::find($id);
+        $task = Task::find($id);
 
         return view('tasks.show', [
             'task' => $task,
@@ -91,11 +96,14 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-           $task = Task::find($id);
-
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        $task = \App\Task::find($id);
+        if (\Auth::id() === $task->user_id) {
+            //$task->edit();
+            return view('tasks.edit', [
+                'task' => $task,
+            ]);
+        }
+        return redirect('/');
     }
 
     /**
@@ -111,8 +119,9 @@ class TasksController extends Controller
             'status' => 'required|max:10',
             'content' => 'required|max:191',
         ]);
-         $task = Task::find($id);
-         $task->status = $request->status; 
+        $task = Task::find($id);
+        
+        $task->status = $request->status; 
         $task->content = $request->content;
         $task->save();
 
@@ -133,6 +142,7 @@ class TasksController extends Controller
             $task->delete();
         }
 
-        return back();
+        return redirect('/');
     }
 }
+                                                                
